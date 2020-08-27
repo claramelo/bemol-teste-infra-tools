@@ -9,5 +9,9 @@ if [[ $MODE == 'create-cluster' ]]; then
 fi
 
 if [[ $MODE == 'deploy' ]]; then
-  ansible-playbook -i /ansible/hosts /ansible/deploy-stack.yml
+  GITHUB_TOKEN=$3
+  OWNER=$4
+  REPO_NAME=$5
+  
+  ansible-playbook -i /ansible/hosts /ansible/deploy-stack.yml --extra-vars "{"github_token": ${GITHUB_TOKEN}, "repo_owner": ${OWNER}, "repo_name": ${REPO_NAME}}"
 fi

@@ -4,6 +4,10 @@
     gather_facts: False
     remote_user: "ec2-user"
     become: yes
+    vars:
+      - github_token: "{{ github_token }}"
+      - repo_owner: "{{ repo_owner }}"
+      - repo_name: "{{ repo_name }}"
     tasks:
       - name: Copy sh script file
         copy:
@@ -14,7 +18,8 @@
           mode: +x
 
       - name: Get compose file
-        command: ./get-compose-file
+        command: |
+          ./get-compose-file {{ github_token }} {{ repo_owner }} {{ repo_name }}
       
       - name: Deploy stack
         command: docker stack deploy --compose-file docker-compose.production.yml bemol_web_api
