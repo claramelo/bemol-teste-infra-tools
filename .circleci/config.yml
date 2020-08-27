@@ -12,40 +12,40 @@ jobs:
     steps:
       - checkout
       - run:
-        name: Valida os arquivos terraform
-        command: |
-          terraform init -backend=false
-          terraform validate
+          name: Valida os arquivos terraform
+          command: |
+            terraform init -backend=false
+            terraform validate
   
   build-push:
     machine: true
     steps:
       - checkout
       - run:
-        name: Docker Login
-        command: |
-         echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+          name: Docker Login
+          command: |
+            echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
       - run:
-        name: Build da imagem do terraform
-        command: |
-          docker build --file Dockerfile \
-                       --build-arg "aws_access_key_id=${AWS_ACCESS_KEY_ID}" \
-                       --build-arg "aws_secret_access_key=${AWS_SECRET_ACCESS_KEY}" \
-                       --tag  "${DOCKER_USER}/provision-infra:latest"
+          name: Build da imagem do terraform
+          command: |
+            docker build . --file Dockerfile \
+                        --build-arg "aws_access_key_id=${AWS_ACCESS_KEY_ID}" \
+                        --build-arg "aws_secret_access_key=${AWS_SECRET_ACCESS_KEY}" \
+                        --tag  "${DOCKER_USER}/provision-infra:latest"
       - run:
-        name: Push imagem
-        command: |
-          docker push "${DOCKER_USER}/provision-infra:latest"
+          name: Push imagem
+          command: |
+            docker push "${DOCKER_USER}/provision-infra:latest"
 
 workflows:
   version: 2
   bemol-terraform-workflow:
     jobs:
-      - terraform-validade
+      - terraform-validate
       - build-push:
           context: common-credentials
           requires:
-            - terraform-validade
+            - terraform-validate
           filters:
             branches:
               only:
