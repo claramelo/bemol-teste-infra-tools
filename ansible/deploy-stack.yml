@@ -1,0 +1,21 @@
+---
+  - name: Deploy Application
+    hosts: masters
+    gather_facts: False
+    remote_user: "ec2-user"
+    become: yes
+    tasks:
+      - name: Copy sh script file
+        copy:
+          src: /ansible/scripts/get-compose-file
+          dest: /home/ec2-user
+          owner: ec2-user
+          group: ec2-user
+          mode: +x
+
+      - name: Get compose file
+        command: ./get-compose-file {{ github_token }} {{repo_owner}} {{repo_name}} {{ env_name }}
+      
+      - name: Deploy stack
+        command: docker stack deploy --compose-file docker-compose{{ env_name }}.yml bemol_web_api
+

@@ -1,0 +1,19 @@
+#!/bin/bash
+mode=$1
+hosts_ips=$2
+
+mkdir inventory && cd inventory
+echo $hosts_ips > hosts
+
+if [[ $mode == 'create-cluster' ]]; then
+  ansible-playbook -i /ansible/inventory/hosts /ansible/create-swarm-cluster.yml
+fi
+
+if [[ $mode == 'deploy' ]]; then
+  GITHUB_TOKEN=$3
+  OWNER=$4
+  REPO=$5
+  ENV_NAME=$6
+
+  ansible-playbook -i /ansible/inventory/hosts /ansible/deploy-stack.yml --extra-var "github_token=$GITHUB_TOKEN repo_owner=$OWNER repo_name=$REPO env_name=$ENV_NAME"
+fi

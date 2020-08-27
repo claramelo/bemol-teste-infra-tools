@@ -1,10 +1,5 @@
 version: 2.1
 
-executors:
-  my-executor:
-    machine: true
-    working_directory: .
-
 jobs:
   terraform-validate:
     docker:
@@ -14,10 +9,11 @@ jobs:
       - run:
           name: Valida os arquivos terraform
           command: |
+            cd terraform
             terraform init -backend=false
             terraform validate
   
-  build-push:
+  build-push-terraform:
     machine: true
     steps:
       - checkout
@@ -28,6 +24,7 @@ jobs:
       - run:
           name: Build da imagem do terraform
           command: |
+            cd terraform
             docker build . --file Dockerfile \
                         --build-arg "aws_access_key_id=${AWS_ACCESS_KEY_ID}" \
                         --build-arg "aws_secret_access_key=${AWS_SECRET_ACCESS_KEY}" \
@@ -36,13 +33,32 @@ jobs:
           name: Push imagem
           command: |
             docker push "${DOCKER_USER}/provision-infra:latest"
+  
+  build-push-ansible:
+    machine: true
+    steps:
+      - checkout
+      - run:
+          name: Docker Login
+          command: |
+            echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+      - run:
+          name: Build da imagem do Ansible
+          command: |
+            cd ansible
+            docker build . --file Dockerfile \
+                           --tag  "${DOCKER_USER}/swarm-cluster-provider:latest"
+      - run:
+          name: Push imagem do Ansible
+          command: |
+            docker push "${DOCKER_USER}/swarm-cluster-provider:latest"
 
 workflows:
   version: 2
   bemol-terraform-workflow:
     jobs:
       - terraform-validate
-      - build-push:
+      - build-push-terraform:
           context: common-credentials
           requires:
             - terraform-validate
@@ -50,3 +66,10 @@ workflows:
             branches:
               only:
                 - master
+      - build-push-ansible:
+          context: common-credentials
+          filters:
+            branches:
+              only:
+                - master
+
