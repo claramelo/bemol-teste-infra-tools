@@ -1,0 +1,25 @@
+#!/bin/bash
+mode=$1
+
+if [[ $mode == 'provision-infra' ]]; then
+  terraform init
+  terraform plan
+  terraform apply -auto-approve
+fi
+
+if [[ $mode == 'deploy-swarm-ip' ]]; then
+  terraform output -json deploy_swarm_ip
+fi
+
+if [[ $mode == 'get-hosts-file' ]]; then
+  leader_ip=$(terraform output -json cluster_swarm_leader_ip | tr -d '\"')
+  workers_ip=$(terraform output -json cluster_swarm_workers_ip | tr -d '\[\"\*\]')
+
+  echo -e "[masters]\n$leader_ip\n\n[workers]\n${workers_ip//','/'\n'}"
+fi
+
+if [[ $mode == 'destroy-infra' ]]; then
+  terraform init
+  terraform plan
+  terraform destroy -auto-approve
+fi
