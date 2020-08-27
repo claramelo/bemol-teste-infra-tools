@@ -8,10 +8,12 @@ if [[ $mode == 'provision-infra' ]]; then
 fi
 
 if [[ $mode == 'deploy-swarm-ip' ]]; then
+  terraform init
   terraform output -json deploy_swarm_ip
 fi
 
 if [[ $mode == 'get-hosts-file' ]]; then
+  terraform init
   leader_ip=$(terraform output -json cluster_swarm_leader_ip | tr -d '\"')
   workers_ip=$(terraform output -json cluster_swarm_workers_ip | tr -d '\[\"\*\]')
 
