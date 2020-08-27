@@ -1,14 +1,9 @@
 #!/bin/sh
 
-GITHUB_TOKEN=$1
-OWNER=$2
-REPO=$3
-ENV_NAME=$4
-FILENAME='docker-compose'
-
-if [[ ! -z "$ENV_NAME" ]]; then
-  FILENAME="${FILENAME}${ENV_NAME}"
-fi
+GITHUB_TOKEN="40fce352dbb62ce271be65f236724bab4cd2a33c"
+OWNER="claramelo"
+REPO="bemol-teste"
+FILENAME="docker-compose.production"
 
 CURL_PATH="https://api.github.com/repos/$OWNER/$REPO/contents/$FILENAME.yml"
 

@@ -13,12 +13,9 @@
           group: ec2-user
           mode: +x
 
-      - name: Docker login
-        command: echo "{{ docker_pass }}" | docker login --username {{ docker_user }} --password-stdin
-
       - name: Get compose file
-        command: ./get-compose-file {{ github_token }} {{repo_owner}} {{repo_name}} {{ env_name }}
+        command: ./get-compose-file
       
       - name: Deploy stack
-        command: docker stack deploy --compose-file docker-compose{{ env_name }}.yml bemol_web_api
+        command: docker stack deploy --compose-file docker-compose.production.yml bemol_web_api
 
