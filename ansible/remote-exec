@@ -13,6 +13,10 @@ if [[ $MODE == 'deploy' ]]; then
   OWNER=$4
   REPO=$5
   ENV_NAME=$6
+  DOCKER_PASS=$7
+  DOCKER_USER=$8
 
-  ansible-playbook -i /ansible/hosts /ansible/deploy-stack.yml --extra-var "github_token=$GITHUB_TOKEN repo_owner=$OWNER repo_name=$REPO env_name=$ENV_NAME"
+  echo $ENV_NAME
+
+  ansible-playbook -i /ansible/hosts /ansible/deploy-stack.yml --extra-var "github_token=$GITHUB_TOKEN repo_owner=$OWNER repo_name=$REPO env_name=$ENV_NAME docker_pass=$DOCKER_PASS docker_user=$DOCKER_USER"
 fi
