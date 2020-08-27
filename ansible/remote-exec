@@ -2,8 +2,8 @@
 mode=$1
 hosts_ips=$2
 
-mkdir inventory && cd inventory
-echo $hosts_ips > hosts
+pwd
+echo -e $hosts_ips > inventory/hosts
 
 if [[ $mode == 'create-cluster' ]]; then
   ansible-playbook -i /ansible/inventory/hosts /ansible/create-swarm-cluster.yml

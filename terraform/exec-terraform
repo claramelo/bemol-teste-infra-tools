@@ -1,6 +1,24 @@
 #!/bin/bash
 mode=$1
 
+get_deploy_swarm_ip () {
+  terraform init > log.init
+  rm log.init
+  swarm_ip=$(terraform output -json deploy_swarm_ip | tr -d '\"')
+
+  echo $swarm_ip
+}
+
+get_host_file () {
+  terraform init > log.init
+  rm log.init
+  leader_ip=$(terraform output -json cluster_swarm_leader_ip | tr -d '\"')
+  workers_ip=$(terraform output -json cluster_swarm_workers_ip | tr -d '\[\"\*\]')
+  hosts_ips="[masters]\n$leader_ip\n\n[workers]\n${workers_ip//','/'\n'}"
+  
+  echo $hosts_ips
+} 
+
 if [[ $mode == 'provision-infra' ]]; then
   terraform init
   terraform plan
@@ -8,16 +26,11 @@ if [[ $mode == 'provision-infra' ]]; then
 fi
 
 if [[ $mode == 'deploy-swarm-ip' ]]; then
-  terraform init
-  terraform output -json deploy_swarm_ip
+  get_deploy_swarm_ip
 fi
 
 if [[ $mode == 'get-hosts-file' ]]; then
-  terraform init
-  leader_ip=$(terraform output -json cluster_swarm_leader_ip | tr -d '\"')
-  workers_ip=$(terraform output -json cluster_swarm_workers_ip | tr -d '\[\"\*\]')
-
-  echo -e "[masters]\n$leader_ip\n\n[workers]\n${workers_ip//','/'\n'}"
+  get_host_file
 fi
 
 if [[ $mode == 'destroy-infra' ]]; then
