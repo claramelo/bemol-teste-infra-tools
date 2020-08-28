@@ -8,5 +8,5 @@ RUN pip3 install ansible
 COPY ./ /ansible
 WORKDIR /ansible
 RUN mkdir ~/.ssh
-RUN cat ./keys/swarm-cluster.pem > ~/.ssh/id_rsa
+RUN cat ./keys/deploy-swarm.pem > ~/.ssh/id_rsa
 RUN chmod 400 ~/.ssh/id_rsa
